@@ -1,58 +1,56 @@
 'use strict'
+// --- Day 1: Trebuchet?! ---
 
-const {assert, getOptions, log, loadData, parseInt} = require('./utils')
+const {assert, loadData} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
 /** @typedef {*} TData */
 
-const parse = (dsn) => {
+const prepare = (dsn) => {
+  const data = rawInput[dsn]
+  return data && data.split('\n').filter(v => Boolean(v))
+}
+
+const parse = (data, useWords) => {
   const phrases = 'zero|one|two|three|four|five|six|seven|eight|nine'
   const reversed = phrases.split('|').map(s => Array.from(s).reverse().join('')).join('|')
   const nums = '0123456789'
-  let data = rawInput[dsn]
 
-  const parse = (line, words) => {
-    let r = new RegExp('(' + words + '|\\d)').exec(line)
-    if (r === null) {
-      r = ''
-    }
+  const parseValue = (line, words) => {
+    const r = new RegExp('(' + words + '|\\d)').exec(line)
+    assert(r, 'bad input:', line)
     return r[1].length === 1 ? nums.indexOf(r[1]) : words.split('|').indexOf(r[1])
   }
 
-  if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
-    data = data.map((line) => {
-      const first = parse(line, phrases)
-      const last = parse(Array.from(line).reverse().join(''), reversed)
-      /* while ((r = /(one|two|three|four|five|six|seven|eight|nine|\d)/.exec(line))) {
-        last = r[1].length === 1 ? nums.indexOf(r[1]) : words.indexOf(r[1])
-        if (first === undefined) first = last
-        line = line.slice(r.index + r[1].length)
-      } */
-      /* for (let i = 0, j, ch; (ch = line[i]) !== undefined; ++i) {
+  return data.map((line) => {
+    let first, last
+
+    if (useWords) {
+      first = parseValue(line, phrases)
+      last = parseValue(Array.from(line).reverse().join(''), reversed)
+    } else {
+      for (let i = 0, j, ch; (ch = line[i]) !== undefined; ++i) {
         if ((j = nums.indexOf(ch)) === -1) continue
         if (first === undefined) first = j
         last = j
-      } */
-      if (last === undefined) throw new Error('BAA')
-      log('R', first, last)
-      return 10 * first + last
-    })
-  }
-  return data   //  NOTE: The runner will distinguish between undefined and falsy!
+      }
+      assert(last !== undefined, 'bad input:', line)
+    }
+    return 10 * first + last
+  })
 }
+
 
 /** @param {TData[]} input */
 const puzzle1 = (input) => {
-  // log('I', input)
-  const r = input.reduce((a, v) => a + v, 0)
-  return r
+  const data = parse(input, false)
+  return data.reduce((a, v) => a + v, 0)
 }
 
 /** @param {TData[]} input */
 const puzzle2 = (input) => {
-  log('I', input)
-  const r = input.reduce((a, v) => a + v, 0)
-  return r
+  const data = parse(input, true)
+  return data.reduce((a, v) => a + v, 0)
 }
 
 //  Example (demo) data.
@@ -71,4 +69,4 @@ xtwone3four
 zoneight234
 7pqrstsixteen`
 
-module.exports = {parse, puzzles: [puzzle1, puzzle2]}
+module.exports = {parse: prepare, puzzles: [puzzle1, puzzle2]}
