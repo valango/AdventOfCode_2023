@@ -1,0 +1,24 @@
+{
+  "name": "advent-of-code-22",
+  "version": "4.0.1",
+  "description": "AdventOfCode.com 2022",
+  "main": "run",
+  "author": "Villem Alango <villem.alango@gmail.com>",
+  "license": "MIT",
+  "keywords": [],
+  "scripts": {
+    "lint": "eslint ./d*.js ./utils/*.js",
+    "purge": "rimraf node_modules"
+  },
+  "engines": {
+    "node": ">=10.15.1"
+  },
+  "private": false,
+  "devDependencies": {
+    "eslint": "^8.29.0",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
+}
