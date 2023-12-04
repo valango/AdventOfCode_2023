@@ -9,6 +9,7 @@ My [adventofcode.com](https://adventofcode.com) adventures.<br />
 * `Day 02` **Cube Conundrum**: Very simple once you understand the task. I am a slow reader, though.
 * `Day 03` **Gear ratios**: I absolutely HATE _any tasks_ that involve keeping track of _**position indices**_! 🤮
   The parts adjacency checking is too complex, because I expected the parts can be of any length - this did not happen.
+* `Day 04` **Scratchcards**: #1 was super simple; #2 was hard to visualize - a straightforward rules-based simulation 🤖 did the trick!
 
 ## Track record
 
@@ -17,6 +18,7 @@ My [adventofcode.com](https://adventofcode.com) adventures.<br />
 |  01 |    74 |    15 |    49 |  1035 |  2583 |    11 |    33 |
 |  02 |    71 |    32 |    13 |   192 |   509 |    12 |    12 |
 |  03 |    87 |    62 |    36 |  8044 |    16 |    37 |    17 |
+|  04 |    53 |    18 |    66 |   240 |   608 |    12 |    92 |
 
 Up there, 'M' stands for main and 'D' stands for demo data.<br>
 The puzzle #2 time is often shorter, because the bulk of computations may happen during the #1 already.
