@@ -54,6 +54,7 @@ const puzzle1 = (input) => {
 //  With real data, this thing will loop forever...
 /** @param {TData} input */
 const puzzle2 = (input) => {
+  return /*
   let smallest = Number.POSITIVE_INFINITY, value
 
   for (let i = 0, a, b; (a = input.seeds[i++]) !== undefined;) {
@@ -65,7 +66,7 @@ const puzzle2 = (input) => {
     }
   }
 
-  return smallest
+  return smallest */
 }
 
 //  Example (demo) data.

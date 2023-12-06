@@ -1,6 +1,7 @@
 # Advent Of Code '2023
 
-My [adventofcode.com](https://adventofcode.com) adventures.<br />
+My [adventofcode.com](https://adventofcode.com) adventures.<br />Estonian private leaderboard (by petskratt) code
+is `652748`.
 
 ## Diary
 
@@ -12,20 +13,24 @@ My [adventofcode.com](https://adventofcode.com) adventures.<br />
 * `Day 04` **Scratchcards**: #1 was super simple; #2 was hard to visualize - a straightforward rules-based simulation 🤖
   did the trick!
 * `Day 05` **If You Give A Seed A Fertilizer**: #1 was simple, but deceiving - simulation approach stalled the system
-  for part #2.
+  for part #2 - _**pending**_ for now.
+* `Day 06` **Wait For It**: Just solving a square equation w discrete values. I wasted an insane amount of time
+  because of using 'analogue' approach instead of 'digital' one (starting at line 19)... w/o taking some time to think
+  it over. 🫠
 
 ## Track record
 
 | day | lines | mins1 | mins2 | M1_µs | M2_µs | D1_µs | D2_µs |
 |----:|------:|------:|------:|------:|------:|------:|------:|
-|  01 |    74 |    15 |    49 |  1035 |  2583 |    11 |    33 |
+|  01 |    66 |    15 |    49 |  1035 |  2583 |    11 |    33 |
 |  02 |    71 |    32 |    13 |   192 |   509 |    12 |    12 |
-|  03 |    87 |    62 |    36 |  8044 |    16 |    37 |    17 |
+|  03 |    85 |    62 |    36 |  8044 |    16 |    37 |    17 |
 |  04 |    53 |    18 |    66 |   240 |   608 |    12 |    92 |
-|  05 |   108 |    70 |
+|  05 |   109 |    70 |       |  1117 |       |    98 |
+|  06 |    50 |    62 |     6 |     6 |     5 |    11 |     2 |
 
-Up there, 'M' stands for main and 'D' stands for demo data.<br>
-The puzzle #2 time is often shorter, because the bulk of computations may happen during the #1 already.
+Up there, prefix _'M'_ stands for _main_ and _'D'_ for _demo data_.<br>
+When some results from step #1 are re-used, then step #2 can be quicker.
 
 ![](quote.png)
 

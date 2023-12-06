@@ -1,7 +1,7 @@
 'use strict'
 // --- Day 2: Cube Conundrum ---
 
-const {assert, loadData, parseInt} = require('./utils')
+const {assert, getOptions, loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
 /** @typedef {{string, number}[]} TData */

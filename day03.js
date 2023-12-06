@@ -5,8 +5,6 @@ const {loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 const {abs} = Math
 
-/** @typedef {string} TData */
-
 const parse = (dsn) => {
   let data = rawInput[dsn]
 
@@ -21,7 +19,7 @@ const doesOverlap = (a1, a2, b1, b2) => b2 >= a1 && b1 <= a2
 /** @type {Map<string, number[]>} */
 let gears
 
-/** @param {TData[]} input */
+/** @param {string[]} input */
 const puzzle1 = (input) => {
   const parts = []
   gears = new Map()
@@ -58,7 +56,7 @@ const puzzle1 = (input) => {
   return sum
 }
 
-/** @param {TData[]} input */
+/** @param {string[]} input */
 const puzzle2 = (input) => {
   if (gears === undefined) puzzle1(input)
 

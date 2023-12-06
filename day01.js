@@ -4,14 +4,12 @@
 const {assert, loadData} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
-/** @typedef {*} TData */
-
-const prepare = (dsn) => {
+const parse = (dsn) => {
   const data = rawInput[dsn]
   return data && data.split('\n').filter(v => Boolean(v))
 }
 
-const parse = (data, useWords) => {
+const decode = (data, useWords) => {
   const phrases = 'zero|one|two|three|four|five|six|seven|eight|nine'
   const reversed = phrases.split('|').map(s => Array.from(s).reverse().join('')).join('|')
   const nums = '0123456789'
@@ -40,17 +38,12 @@ const parse = (data, useWords) => {
   })
 }
 
-
-/** @param {TData[]} input */
 const puzzle1 = (input) => {
-  const data = parse(input, false)
-  return data.reduce((a, v) => a + v, 0)
+  return decode(input, false).reduce((a, v) => a + v, 0)
 }
 
-/** @param {TData[]} input */
 const puzzle2 = (input) => {
-  const data = parse(input, true)
-  return data.reduce((a, v) => a + v, 0)
+  return decode(input, true).reduce((a, v) => a + v, 0)
 }
 
 //  Example (demo) data.
@@ -69,4 +62,4 @@ xtwone3four
 zoneight234
 7pqrstsixteen`
 
-module.exports = {parse: prepare, puzzles: [puzzle1, puzzle2]}
+module.exports = {parse, puzzles: [puzzle1, puzzle2]}
