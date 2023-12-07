@@ -1,17 +1,15 @@
+// --- Day 5: If You Give A Seed A Fertilizer ---
 'use strict'
 
-const {assert, getOptions, log, loadData, parseInt} = require('./utils')
+const {cloneDeep} = require('lodash')
+const {loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), loadData(module.filename, '.demo'), undefined, undefined]
-const {max,min} = Math
 
 /** @typedef {{beg:number, end:number, shift:number}} Transform */
 /** @typedef {Transform[]} Step */
 
-let id = 0
-
 const parse = (dsn) => {
   let data = rawInput[dsn]
-  id = 0
 
   if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
     let seeds = [], steps = [], step
@@ -21,7 +19,7 @@ const parse = (dsn) => {
         seeds = line.split(': ')[1].split(' ').map(s => parseInt(s))
       } else if (/^\d/.test(line)) {
         let [dst, beg, len] = line.split(' ').map(s => parseInt(s))
-        step.push({beg, end: beg + len, shift: dst - beg, id})
+        step.push({beg, end: beg + len, shift: dst - beg})
       } else {
         steps.push(step = [])
       }
@@ -31,84 +29,74 @@ const parse = (dsn) => {
   return data
 }
 
-// const isBetween = (v, a, b) => v >= a && v < b
-
 const doesOverlap = ({beg, end}, from, to) => beg < to && end > from
 
 const add = (array, tr) => {
-  const {beg, end} = tr, old = array.find(t => doesOverlap(t, beg, end))
-
-  assert(!old, `OVERLAP ${tr.id} -> ${old && old.id}`)
-  tr.id = ++id
-  if (id === 6) {
-    id *= 1
-  }
+  // const {beg, end} = tr, old = array.find(t => doesOverlap(t, beg, end))
+  // assert(!old, `OVERLAP ${tr.id} -> ${old && old.id}`)
   return array.push(tr)
 }
 
 /** @param {Transform[][]} steps */
 const flatten = (steps) => {
   let /** @type {Transform[]} */ transforms = [], i
-  let /** @type {Transform} */ tr, /** @type {Transform} */ old
-  id = 0
+  let /** @type {Transform} */ fresh, /** @type {Transform} */ old
 
-  for (const step of steps) {
-    const combined = []
+  for (let stepIndex = 0; stepIndex < steps.length; ++stepIndex) {
+    const /** @type {Transform[]} */ step = cloneDeep(steps[stepIndex])
+    const toAdd = []
 
-    for (const news = [...step]; (tr = news.pop());) {
-      //  TODO: maintain the coverage area of tr, until all overlapping olds have been processed.
-      //  Because old transforms inputs do not overlap, it is safe to add combined transform immediately
-      //  The uncovered areas would generate new input areas, after they are checked for overlapping the existing inputs.
-      let wasAdded = false
-      while ((i = transforms.findIndex(t => doesOverlap(tr, t.beg + t.shift, t.end + t.shift))) !== -1) {
+    while ((fresh = step.pop())) {
+      //  Find existing transform with output affecting the `fresh`.
+      while ((i = transforms.findIndex(t => doesOverlap(fresh, t.beg + t.shift, t.end + t.shift))) !== -1) {
         old = transforms.splice(i, 1)[0]
+
         const {shift} = old, start = old.beg + shift, limit = old.end + shift
 
-        if (start < tr.beg) {                                 //  Old starts before new - preserve starting part
-          add(transforms, {...old, end: i = tr.beg - shift})
+        if (start < fresh.beg) {                                 //  Old starts before new - preserve leading part
+          add(transforms, {...old, end: i = fresh.beg - shift})
           old.beg = i
-        } else if (start > tr.beg) {                          //  New starts before translation
-          add(news, {...tr, end: start})                      // - try starting part with other olds too
-          tr.beg = start
+        } else if (start > fresh.beg) {                          //  New starts before translation
+          add(step, {...fresh, end: start})                      // - try starting part with other olds too
+          fresh.beg = start
         }
-        if (limit > tr.end) {                                 //  Old ends after new - preserve trailing part
-          add(transforms, {...old, beg: i = tr.end - shift})
+        if (limit > fresh.end) {                                 //  Old ends after new - preserve trailing part
+          add(transforms, {...old, beg: i = fresh.end - shift})
           old.end = i
-        } else if (limit < tr.end) {                          //  New ends after translation
-          add(news, {...tr, beg: limit})                      // - try trailing part with other olds too
-          tr.end = limit
+        } else if (limit < fresh.end) {                          //  New ends after translation
+          add(step, {...fresh, beg: limit})                      // - try trailing part with other olds too
+          fresh.end = limit
         }
-        //  Now, the new transform fits w output of the old
-        add(combined, {...old, shift: shift + tr.shift})
-        wasAdded = true
-      } // else add(combined, tr)
-      if (!wasAdded) add(combined, tr)
+        //  All what is left of `fresh` fits with the output of `old` now.
+        if (old.end > old.beg) {
+          add(toAdd, {...old, shift: shift + fresh.shift}) //  OK, because no fresh output overlaps fresh input.
+          fresh.end = fresh.beg
+        }
+      }
+      //  A fresh transform not matching old outputs.
+      if (fresh.end > fresh.beg) {                              //  Trash all parts shadowed by existing inputs.
+        while ((i = transforms.findIndex(t => doesOverlap(fresh, t.beg, t.end))) !== -1) {
+          old = transforms.splice(i, 1)[0]
+
+          if (fresh.beg < old.beg) {
+            fresh.beg = old.beg
+            add(step, {...fresh})
+          }
+          if (fresh.end > old.end) {
+            fresh.end = old.end
+            add(step, {...fresh})
+          }
+          if (fresh.beg < fresh.end) {
+            add(step, {...fresh})
+            fresh.end = fresh.beg
+          }
+        }
+        if (fresh.end > fresh.beg) {
+          add(toAdd, fresh)
+        }
+      }
     }
-    while ((tr = combined.pop())) {
-      if (tr.beg >= tr.end) continue
-      if(tr.id===96){
-        i = 0
-      }
-      while ((i = transforms.findIndex(t => doesOverlap(t, tr.beg, tr.end))) !== -1) {
-        old = transforms.splice(i, 1)[0]
-        if (old.beg < tr.beg) {
-          add(transforms, {...old, end: tr.beg})
-        }
-        if (old.end > tr.end) {
-          add(transforms, {...old, beg: tr.end})
-        }
-      }
-      add(transforms, tr)
-      /* i = 0
-      if ((old = transforms.find(t => doesOverlap(t, tr.beg, tr.end)))) {
-        if (tr.beg < old.beg) i = add(combined, {...tr, end: old.beg})
-        if (tr.end > old.end) i = add(combined, {...tr, beg: old.end})
-      }
-      if (i === 0) {
-        add(transforms, tr)
-        transforms.sort((a, b) => a.beg - b.beg)
-      } */
-    }
+    while(toAdd.length) add(transforms, toAdd.pop())
   }
   return transforms.sort((a, b) => a.beg - b.beg)
 }
@@ -124,20 +112,17 @@ const computeOne = (seed, transforms) => {
  */
 const puzzle1 = ({steps, seeds}) => {
   const transforms = flatten(steps)
-  const vals = seeds.map(s => computeOne(s, transforms))
-  // const values = input.seeds.map(v => convert(v, input.steps))
+  const values = seeds.map(s => computeOne(s, transforms))
 
-  return vals.reduce((r, v) => Math.min(r, v), Number.POSITIVE_INFINITY)
-  // return vals.length
+  return values.reduce((r, v) => Math.min(r, v), Number.POSITIVE_INFINITY)
 }
 
 const puzzle2 = ({steps, seeds}) => {
-  const transforms = flatten(steps), beginnings = transforms.map(t => t.beg)
-  const tried = new Set()
-  let least = Number.POSITIVE_INFINITY, v
+  const transforms = flatten(steps)
+  let least = Number.POSITIVE_INFINITY
 
   for (let groupIndex = 0; groupIndex < seeds.length;) {
-    //  Try only the start values
+    //  Try start values only.
     let start = seeds[groupIndex++], limit = seeds[groupIndex++] + start, r
 
     const intervals = transforms.filter(t => t.beg < limit && t.end > start)
@@ -145,15 +130,7 @@ const puzzle2 = ({steps, seeds}) => {
     for (const {beg} of intervals) {
       r = computeOne(Math.max(beg, start), transforms)
       if (r < least) least = r
-      // tried.add(v)
     }
-    // const toTry = beginnings.filter(v => !tried.has(v) && v >= start && v < limit)
-
-    /*for (const v of toTry) {
-      r = computeOne(v, transforms)
-      if (r < least) least = r
-      tried.add(v)
-    }*/
   }
   return least
 }
