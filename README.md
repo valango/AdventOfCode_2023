@@ -12,8 +12,9 @@ is `652748`.
   The parts adjacency checking is too complex, because I expected the parts can be of any length - this did not happen.
 * `Day 04` **Scratchcards**: #1 was super simple; #2 was hard to visualize - a straightforward rules-based simulation 🤖
   did the trick!
-* `Day 05` **If You Give A Seed A Fertilizer**: #1 was simple, but deceiving - simulation approach stalled the system
-  for part #2 - _**pending**_ for now.
+* `Day 05` **If You Give A Seed A Fertilizer**:
+  1. Computing is easy, but...
+  2. Idea of superpositioning the individual transformation steps was easy, but implementation required mental clarity I am usual short of! 🤯
 * `Day 06` **Wait For It**: Just solving a square equation w discrete values. I wasted an insane amount of time
   because of using 'analogue' approach instead of 'digital' one (starting at line 19)... w/o taking some time to think
   it over. 🫠
@@ -27,7 +28,7 @@ is `652748`.
 |  02 |    71 |    32 |    13 |   192 |   509 |    12 |    12 |
 |  03 |    85 |    62 |    36 |  8044 |    16 |    37 |    17 |
 |  04 |    53 |    18 |    66 |   240 |   608 |    12 |    92 |
-|  05 |   109 |    70 |       |  1117 |       |    98 |
+|  05 |   109 |    70 |   >4h |  4862 |  3413 |   130 |   111 |
 |  06 |    50 |    62 |     6 |     6 |     5 |    11 |     2 |
 |  07 |    87 |    48 |   265 |  1493 |  1653 |    10 |    12 |
 
