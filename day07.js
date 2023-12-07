@@ -7,14 +7,17 @@ const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 /** @typedef {{hand:string, bid:number, pairs:[string, number][], strength:number}} Rec */
 
 const labelRanks = Array.from('AKQJT98765432').reverse()
+const jokerRanks = Array.from('AKQT98765432J').reverse()
 const typeRanks = '11111 2111 221 311 32 41 5'.split(' ')
-let dbg = []
 
-/** @param {Rec} entry */
+/**
+ * @param {Rec} entry
+ * @param {string?} key
+ */
 const setStrength = (entry, key = '') => {
   const map = new Map(), pairs = []
-
   const hand = key || entry.hand
+
   Array.from(hand).forEach(k => map.set(k, (map.get(k) || 0) + 1))
   map.forEach((v, k) => pairs.push([k, v]))
 
@@ -36,69 +39,40 @@ const parse = (dsn) => {
   return data
 }
 
-const getScore = (entries) => {
+const getScore = (entries, ranks) => {
   entries.sort((a, b) => {
     let i = a.strength - b.strength
-    if (i === 0) {
-      for (let j = 0; i === 0 && j < 5; ++j) {
-        i = labelRanks.indexOf(a.hand[j]) - labelRanks.indexOf(b.hand[j])
-      }
-    }
-    if (i === 0) {
-      dbg.pop()
-    }
+
+    for (let j = 0; i === 0 && j < 5; ++j) i = ranks.indexOf(a.hand[j]) - ranks.indexOf(b.hand[j])
     return i
   })
-  dbg.push('')
   return entries.reduce((a, r, i) => a + (i + 1) * r.bid, 0)
 }
 
-// #1 D: 6440 M: 251545216   #2 D: 5905  M: 249261452 (wrong)
-//                                          250599963 (wrong)
-//                                          250599963
-
 /** @param {Rec[]} input */
 const puzzle1 = (input) => {
-  return getScore(input)
+  return getScore(input, labelRanks)
 }
 
 /** @param {Rec} rec */
-const toReplaceWithJoker = (rec) => {
-  if (rec.pairs.length === 1) {
-    return 'A'
-  }
-  const iJ = rec.pairs.findIndex(p => p[0] === 'J')
-  const pairs = rec.pairs.slice()
-  const pJ = pairs.splice(iJ, 1)[0]
-  const s1 = pairs.map(p => p[0]).join('')
+const getJokerReplacement = (rec) => {
+  const pairs = [...rec.pairs]
 
-  if (pJ[1] === 1 && (rec.strength % 2) === 0 || pJ[1] === 2 && rec.strength === 1 || pJ[1] === 3) {
-    dbg.pop()
-    pairs.sort((a, b) => labelRanks.indexOf(b[0]) - labelRanks.indexOf(a[0]))
-    if (s1 !== pairs.map(p => p[0]).join('') && pJ[1] === 1 && rec.strength === 4) {
-      dbg.pop()
-    }
-  } else {
-    dbg.pop()
-  }
+  pairs.splice(pairs.findIndex(p => p[0] === 'J'), 1)
+
   return pairs[0][0]
 }
-
-//  #2 result is still invalid!
 
 /** @param {Rec[]} entries */
 const puzzle2 = (entries) => {
   for (const r of entries) {
-    let jokers = Array.from(r.hand).reduce((cnt, ch) => cnt + (ch === 'J' ? 1 : 0), 0)
+    const jokers = Array.from(r.hand).reduce((cnt, ch) => cnt + (ch === 'J' ? 1 : 0), 0)
 
-    if (jokers) {
-      let ch = toReplaceWithJoker(r), key = r.hand.replaceAll('J', ch)
-      setStrength(r, key)
-      dbg.pop()
+    if (jokers > 0 && r.pairs.length > 1) {
+      setStrength(r, r.hand.replaceAll('J', getJokerReplacement(r)))
     }
   }
-
-  return getScore(entries)
+  return getScore(entries, jokerRanks)
 }
 
 //  Example (demo) data.

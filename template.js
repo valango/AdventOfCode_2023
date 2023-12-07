@@ -11,7 +11,7 @@ const parse = (dsn) => {
   if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
     return data
   }
-  return data   //  NOTE: The runner will distinguish between undefined and falsy!
+  return data
 }
 
 /** @param {TData[]} input */

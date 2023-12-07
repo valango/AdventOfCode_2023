@@ -17,7 +17,7 @@ is `652748`.
 * `Day 06` **Wait For It**: Just solving a square equation w discrete values. I wasted an insane amount of time
   because of using 'analogue' approach instead of 'digital' one (starting at line 19)... w/o taking some time to think
   it over. 🫠
-* `Day 07` **Camel Cards**: Puzzle #2 result is still wrong... 🤤
+* `Day 07` **Camel Cards**: Puzzle #2 really required a keen eye 🤤 when reading the description.
 
 ## Track record
 
@@ -29,7 +29,7 @@ is `652748`.
 |  04 |    53 |    18 |    66 |   240 |   608 |    12 |    92 |
 |  05 |   109 |    70 |       |  1117 |       |    98 |
 |  06 |    50 |    62 |     6 |     6 |     5 |    11 |     2 |
-|  07 |   113 |    48 |       |  1830 |  1825 |     6 |    14 |
+|  07 |    87 |    48 |   265 |  1493 |  1653 |    10 |    12 |
 
 Up there, prefix _'M'_ stands for _main_ and _'D'_ for _demo data_.<br>
 When some results from step #1 are re-used, then step #2 can be quicker.
