@@ -4,7 +4,7 @@
 const {assert, getOptions, log, loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
-/** @typedef {{lr:number[],map:number[][], start: number, end: number}} TData */
+/** @typedef {{lr:number[],map:number[][], start: number, end: number, starts:number[], ends:number[]}} TData */
 
 /** @param {number[][]} old */
 const optimizeMap = (old) => {
@@ -18,7 +18,7 @@ const optimizeMap = (old) => {
 }
 
 const parse = (dsn) => {
-  let data = rawInput[dsn], map = []
+  let data = rawInput[dsn], map = [], starts = [], ends = []
 
   if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
     const indexMap = new Map()
@@ -36,20 +36,24 @@ const parse = (dsn) => {
       if (lr === undefined) lr = Array.from(line).map(ch => 'LR'.indexOf(ch))
       else {
         assert((r = /(\w+)\W+(\w+)\W+(\w+)/.exec(line)), 'BAD LINE')
-        if (r[1] === 'AAA') start = map.length
-        if (r[1] === 'ZZZ') end = map.length
+        if (r[1].endsWith('A')) {
+          starts.push(map.length)
+          if (r[1] === 'AAA') start = map.length
+        } else if (r[1].endsWith('Z')) {
+          ends.push(map.length)
+          if (r[1] === 'ZZZ') end = map.length
+        }
         map.push([translate(r[1]), translate(r[2]), translate(r[3])])
       }
     }
     map = optimizeMap(map)
-    data = {lr, map, start, end}
+    data = {lr, map, start, end, starts, ends}
   }
   return data
 }
 
-// Works w example, hangs w real.
 /** @param {TData} input */
-const traverse = (input) => {
+const puzzle1 = (input) => {
   const {lr, map, end} = input, dst = map.length - 1, limit = lr.length
   let ip = 0, steps = 0
 
@@ -65,14 +69,32 @@ const traverse = (input) => {
   return steps
 }
 
-/** @param {TData} input */
-const puzzle1 = (input) => {
-  return traverse(input)
-}
 
 /** @param {TData} input */
 const puzzle2 = (input) => {
-  return getOptions().isDemo ? traverse(input) : -1
+  const {lr, map, starts, ends} = input
+  const pos = [...starts], {length} = pos, limit = lr.length
+  let steps = 0
+
+  const solveOneFrom = (inode) => {
+    for (let dir = 0, ip = 0, next; ; ++ip, ++steps) {
+      if (ends.includes(inode)) break
+
+      if (ip === limit) ip = 0
+      dir = lr[ip]
+
+      next = map[inode][dir]
+      inode = next
+    }
+    return steps
+  }
+
+  const counts = starts.map(solveOneFrom)
+  //  [19631, 36918, 49517, 72664, 86435, 107238]
+  //  Now we need to compute the smallest number divisible to each of the counts!
+  //  The numbers are not divisible to each other, but their product 24170885259850997520004545120n is too high.
+
+  return counts.length
 }
 
 //  Example (demo) data.
@@ -86,10 +108,16 @@ EEE = (EEE, EEE)
 GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)`
 //  Uncomment the next line to disable demo for puzzle2 or to define different demo data for it.
-rawInput[2] = `LLR
+rawInput[2] = `LR
 
-AAA = (BBB, BBB)
-BBB = (AAA, ZZZ)
-ZZZ = (ZZZ, ZZZ)`
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+`
 
 module.exports = {parse, puzzles: [puzzle1, puzzle2]}
