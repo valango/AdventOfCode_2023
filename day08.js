@@ -4,7 +4,7 @@
 const {assert, getOptions, log, loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
-/** @typedef {{lr:number[],map:number[][], start: number}} TData */
+/** @typedef {{lr:number[],map:number[][], start: number, end: number}} TData */
 
 /** @param {number[][]} old */
 const optimizeMap = (old) => {
@@ -31,17 +31,18 @@ const parse = (dsn) => {
       }
       return i
     }
-    let lr, r, start
+    let lr, r, start, end
     for (const line of data) {
       if (lr === undefined) lr = Array.from(line).map(ch => 'LR'.indexOf(ch))
       else {
         assert((r = /(\w+)\W+(\w+)\W+(\w+)/.exec(line)), 'BAD LINE')
         if (r[1] === 'AAA') start = map.length
+        if (r[1] === 'ZZZ') end = map.length
         map.push([translate(r[1]), translate(r[2]), translate(r[3])])
       }
     }
     map = optimizeMap(map)
-    data = {lr, map, start}
+    data = {lr, map, start, end}
   }
   return data
 }
@@ -49,12 +50,13 @@ const parse = (dsn) => {
 // Works w example, hangs w real.
 /** @param {TData} input */
 const traverse = (input) => {
-  const {lr, map} = input, dst = map.length - 1, limit = lr.length
+  const {lr, map, end} = input, dst = map.length - 1, limit = lr.length
   let ip = 0, steps = 0
 
   for (let dir = 0, inode = input.start; ; ++ip, ++steps) {
     const [l, r] = map[inode]
-    if (l === r && l === inode) break
+    // if (l === r && l === inode) break
+    if (inode === end) break
     if (ip === limit) ip = 0
     dir = lr[ip]
     inode = dir ? r : l
@@ -70,7 +72,7 @@ const puzzle1 = (input) => {
 
 /** @param {TData} input */
 const puzzle2 = (input) => {
-  return traverse(input)
+  return getOptions().isDemo ? traverse(input) : -1
 }
 
 //  Example (demo) data.

@@ -19,6 +19,7 @@ is `652748`.
   because of using 'analogue' approach instead of 'digital' one (starting at line 19)... w/o taking some time to think
   it over. 🫠
 * `Day 07` **Camel Cards**: Puzzle #2 really required a keen eye 🤤 when reading the description.
+* `Day 08` **Haunted Wasteland**: This was just ingenious - it is _**so importand**_ to follow task description details!
 
 ## Track record
 
