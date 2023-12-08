@@ -1,8 +1,10 @@
 // --- Day 8: Haunted Wasteland ---
 'use strict'
 
-const {assert, getOptions, log, loadData, parseInt} = require('./utils')
+const {assert, loadData} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
+const factorize = require('./utils/lib/factorize')
+const {max} = Math
 
 /** @typedef {{lr:number[],map:number[][], start: number, end: number, starts:number[], ends:number[]}} TData */
 
@@ -18,10 +20,12 @@ const optimizeMap = (old) => {
 }
 
 const parse = (dsn) => {
+  // console.log( 'G8 '+dsn, getOptions())
   let data = rawInput[dsn], map = [], starts = [], ends = []
 
   if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
     const indexMap = new Map()
+    let lr, r, start, end
 
     const translate = (str) => {
       let i = indexMap.get(str)
@@ -31,7 +35,7 @@ const parse = (dsn) => {
       }
       return i
     }
-    let lr, r, start, end
+
     for (const line of data) {
       if (lr === undefined) lr = Array.from(line).map(ch => 'LR'.indexOf(ch))
       else {
@@ -54,47 +58,46 @@ const parse = (dsn) => {
 
 /** @param {TData} input */
 const puzzle1 = (input) => {
-  const {lr, map, end} = input, dst = map.length - 1, limit = lr.length
+  const {lr, map, end} = input, limit = lr.length
   let ip = 0, steps = 0
 
-  for (let dir = 0, inode = input.start; ; ++ip, ++steps) {
-    const [l, r] = map[inode]
-    // if (l === r && l === inode) break
-    if (inode === end) break
+  for (let inode = input.start; inode !== end; ++ip, ++steps) {
     if (ip === limit) ip = 0
-    dir = lr[ip]
-    inode = dir ? r : l
+    inode = map[inode][lr[ip]]
   }
 
   return steps
 }
 
-
 /** @param {TData} input */
 const puzzle2 = (input) => {
-  const {lr, map, starts, ends} = input
-  const pos = [...starts], {length} = pos, limit = lr.length
-  let steps = 0
+  const {lr, map, starts, ends} = input, limit = lr.length
 
   const solveOneFrom = (inode) => {
-    for (let dir = 0, ip = 0, next; ; ++ip, ++steps) {
-      if (ends.includes(inode)) break
+    let steps = 0
 
+    for (let ip = 0; !ends.includes(inode); ++ip, ++steps) {
       if (ip === limit) ip = 0
-      dir = lr[ip]
 
-      next = map[inode][dir]
-      inode = next
+      inode = map[inode][lr[ip]]
     }
     return steps
   }
 
-  const counts = starts.map(solveOneFrom)
-  //  [19631, 36918, 49517, 72664, 86435, 107238]
-  //  Now we need to compute the smallest number divisible to each of the counts!
-  //  The numbers are not divisible to each other, but their product 24170885259850997520004545120n is too high.
+  const stepCounts = starts.map(solveOneFrom)
+  const factorizations = stepCounts.map(factorize)
+  const factorCounts = new Map()
 
-  return counts.length
+  for (const factors of factorizations) {
+    for (const [factor, count] of factors) {
+      factorCounts.set(factor, max((factorCounts.get(factor) || 0), count))
+    }
+  }
+
+  let magic = 1
+  factorCounts.forEach((cnt, factor) => magic *= cnt * factor)
+
+  return magic
 }
 
 //  Example (demo) data.
@@ -107,7 +110,7 @@ DDD = (DDD, DDD)
 EEE = (EEE, EEE)
 GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)`
-//  Uncomment the next line to disable demo for puzzle2 or to define different demo data for it.
+
 rawInput[2] = `LR
 
 11A = (11B, XXX)
@@ -117,7 +120,6 @@ rawInput[2] = `LR
 22B = (22C, 22C)
 22C = (22Z, 22Z)
 22Z = (22B, 22B)
-XXX = (XXX, XXX)
-`
+XXX = (XXX, XXX)`
 
 module.exports = {parse, puzzles: [puzzle1, puzzle2]}
