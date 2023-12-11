@@ -1,5 +1,5 @@
+// pasteTheTitleHere
 'use strict'
-
 const {assert, getOptions,  log, loadData, parseInt} = require('./utils')
 const rawInput = [loadData(module.filename), undefined, undefined, undefined]
 
@@ -9,7 +9,7 @@ const parse = (dsn) => {
   let data = rawInput[dsn]
 
   if (data && (data = data.split('\n').filter(v => Boolean(v))).length) {
-    return data
+    data = data
   }
   return data
 }

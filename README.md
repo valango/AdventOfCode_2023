@@ -1,7 +1,7 @@
 # Advent Of Code '2023
 
-My [adventofcode.com](https://adventofcode.com) adventures.<br />Estonian private leaderboard (by petskratt) code
-is `652748`.
+My [Advent of Code](https://adventofcode.com) adventures.<br />
+Estonian private leaderboard (by petskratt) is here: https://adventofcode.com/2023/leaderboard/private/view/652748.
 
 ## Diary
 
@@ -14,14 +14,17 @@ is `652748`.
   did the trick!
 * `Day 05` **If You Give A Seed A Fertilizer**:
   1. Computing is easy, but...
-  2. Idea of superpositioning the individual transformation steps was easy, but implementation required mental clarity I
-     am usual short of! 🤯
+  2. Idea of super-positioning of individual transformation steps was easy, but implementation required mental clarity I
+     am usually short of! 🤯
 * `Day 06` **Wait For It**: Just solving a square equation w discrete values. I wasted an insane amount of time
   because of using 'analogue' approach instead of 'digital' one (starting at line 19)... w/o taking some time to think
   it over. 🫠
 * `Day 07` **Camel Cards**: Puzzle #2 really required a keen eye 🤤 when reading the description.
 * `Day 08` **Haunted Wasteland**: This was just ingenious - it is _**so important**_ to follow task description details!
 * `Day 09` **Mirage Maintenance**: Easy. 🌴🌴🌴
+* `Day 11` **Cosmic Expansion**: Unexpectedly simple. But as usual, I lost quite some time because of appallingly stupid index error. 🫠
+  At stage #1 I implemented the gaps quite inefficiently, thinking that this weirdness might pay off
+  at stage #2 (maybe new galaxies should be generated or something)... it didn't!
 
 ## Track record
 
@@ -35,6 +38,7 @@ is `652748`.
 |  06 |    50 |    62 |     6 |     6 |     5 |    11 |     2 |
 |  07 |    87 |    48 |   265 |  1493 |  1653 |    10 |    12 |
 |  09 |    78 |    45 |    33 |  1963 |   860 |    16 |    15 |
+|  11 |   110 |    50 |    20 | 11781 |  8649 |   160 |    32 |
 
 Up there, prefix _'M'_ stands for _main_ and _'D'_ for _demo data_.<br>
 When some results from step #1 are re-used, then step #2 can be quicker.
