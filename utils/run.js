@@ -87,7 +87,7 @@ const runPuzzles = (days, options, say) => {
       let msg = (`\rday${day}: puzzle #${n + 1} `)
 
       if (warmUpData) {
-        setOptions({...opts, isDemo: true, isWarmUp: true})
+        setOptions({...opts, isDemo: false, isWarmUp: true})
         logOn(false)
         execute(loadable.puzzles[n], warmUpData)
         logOn(true)
